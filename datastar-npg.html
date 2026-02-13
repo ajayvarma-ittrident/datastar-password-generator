@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="style.css">
+	<title>Random password generator (Datastar + JS)</title>
+	<script type="module"
+		src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.7/bundles/datastar.js"></script>
+</head>
+
+<body>
+	<form data-signals="{numbers: false, 
+			uppercase: false, 
+			lowercase: false, 
+			ascii: false, 
+			space: '', 
+			customcheck: false, 
+			customchar: '', 
+			charset: '', 
+			password: '',
+			type: 'length',
+			wholelen: '',
+			len: 10,
+			entropy: 124,
+			entropystr:'', 
+			}" data-effect="$charset = initCharSet($numbers, $uppercase, $lowercase, $ascii, $space, $customcheck, $customchar);
+						$wholelen = calcLength($type, $len, $entropy, $charset);
+						$password = $charset ? generatePassword($charset,$wholelen) : '';
+						$entropystr = calcentropy($charset, $wholelen); ">
+		<h1>Random password generator (Datastar + JS)</h1>
+		<fieldset>
+			<p>Character set:</p>
+			<label><input type="checkbox" data-bind:numbers />
+				Numbers <i>(0123456789)</i></label><br />
+			<label><input type="checkbox" data-bind:uppercase />
+				Uppercase<i>(ABCDEFGHIJKLMNOPQRSTUVWXYZ)</i></label><br />
+			<label><input type="checkbox" data-bind:lowercase />
+				Lowercase<i>(abcdefghijklmnopqrstuvwxyz)</i></label><br />
+			<label><input type="checkbox" data-bind:ascii />
+				Ascii<i>(!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~)</i></label><br />
+			<label><input type="checkbox" data-bind:space />
+				Space<i>()</i></label><br />
+			<label><input type="checkbox" data-bind:customcheck />
+				Custom: <input type="text" data-bind:customchar data-on:input="$customcheck=true" /></label><br />
+			<span data-show="$type==='entropy' && $charset.length==1">Error: Need at least 2 distinct characters in set</span>
+		</fieldset>
+		<fieldset>
+			<label>
+				<input type="radio" value="length" data-bind:type /> Length:
+				<input type="number" data-bind:len /> characters
+			</label><br />
+			<label>
+				<input type="radio" value="entropy" data-bind:type /> Entropy:
+				<input type="number" data-bind:entropy /> bits
+			</label><br />
+			<span data-show="$wholelen > 10000 && !($type==='entropy' && $charset.length==1)">
+				Error: Password length too large
+			</span>
+			<span data-show="$wholelen < 0">
+				Error: Negative password length
+			</span><br />
+			<b>Password:</b><output id="password" data-text="$password"></output><br />
+			<button type="button" data-on:click="copy()" data-attr:disabled="$password == ''"
+				data-class:enabled="$password != ''">Copy</button>
+			<p id="strength" data-show="$password != ''">
+				Length: <output data-text="$wholelen"></output> chars,
+				Charset size: <output data-text="$charset.length"></output> symbols,
+				Entropy: <output data-text="$entropystr"></output> bits
+			</p>
+		</fieldset>
+	</form>
+	<script src="datastar-npg.js"></script>
+</body>
+
+</html>
