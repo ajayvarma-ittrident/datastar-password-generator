@@ -14,16 +14,16 @@
 			uppercase: false, 
 			lowercase: false, 
 			ascii: false, 
-			space: '', 
+			space: false, 
 			customcheck: false, 
 			customchar: '', 
 			charset: '', 
 			password: '',
 			type: 'length',
-			wholelen: '',
+			wholelen: 0,
 			len: 10,
 			entropy: 124,
-			entropystr:'', 
+			entropystr: 0, 
 			}" data-effect="$charset = initCharSet($numbers, $uppercase, $lowercase, $ascii, $space, $customcheck, $customchar);
 						$wholelen = calcLength($type, $len, $entropy, $charset);
 						$password = $charset ? generatePassword($charset,$wholelen) : '';

@@ -9,12 +9,14 @@ function initCharSet(numbers, uppercase, lowercase, ascii, space, customcheck, c
     const asciiChar = ascii ? "!\"#$%" + String.fromCharCode(38) + "'()*+,-./:;" + String.fromCharCode(60) + "=>?@[\\]^_`{|}~" : "";
     const spaceChar = space ? " " : "";
     const customCharset = customcheck ? removeDuplicate(customchar) : "";
-    const charset = numChar + lowerChar + upperChar + asciiChar + spaceChar + customCharset;
-    return charset;
+    let rawCharset = numChar + lowerChar + upperChar + asciiChar + spaceChar + customCharset;
+    console.log(rawCharset);
+    return rawCharset;
 }
 
 // Removes duplicate entries
 function removeDuplicate(customchar){
+    customchar = customchar.replace(/\s/g, "\u00A0");
     let orgCharset = "";
     for (const ch of customchar) {
         if (!orgCharset.includes(ch)){

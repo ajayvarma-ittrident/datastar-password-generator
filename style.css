@@ -78,3 +78,7 @@ span{
     color: red;
     font-size:large;
 }
+
+label{
+    user-select: none;
+}
