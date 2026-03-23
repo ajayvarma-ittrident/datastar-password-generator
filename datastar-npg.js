@@ -1,77 +1,94 @@
 "use strict";
 let cryptoObject = null;
 
-// Initialize characterset
-function initCharSet(numbers, uppercase, lowercase, ascii, space, customcheck, customchar) {
-    const numChar = numbers ? "0123456789" : "";
-    const upperChar = uppercase ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "";
-    const lowerChar = lowercase ? "abcdefghijklmnopqrstuvwxyz" : "";
-    const asciiChar = ascii ? "!\"#$%" + String.fromCharCode(38) + "'()*+,-./:;" + String.fromCharCode(60) + "=>?@[\\]^_`{|}~" : "";
-    const spaceChar = space ? " " : "";
-    const customCharset = customcheck ? removeDuplicate(customchar) : "";
-    let rawCharset = numChar + lowerChar + upperChar + asciiChar + spaceChar + customCharset;
-    console.log(rawCharset);
-    return rawCharset;
-}
+//define character_set
+const CHAR_SETS = {
+    numbers: "0123456789",
+    uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    lowercase: "abcdefghijklmnopqrstuvwxyz",
+    ascii: "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
+    space: " ",
+};
 
-// Removes duplicate entries
-function removeDuplicate(customchar){
-    customchar = customchar.replace(/\s/g, "\u00A0");
+// Initialize character_set
+function initCharSet(numbers, uppercase, lowercase, ascii, space, customcheck, customchar) {
+    let rawCharset = "";
+    if (numbers)
+        rawCharset += CHAR_SETS.numbers;
+    if (uppercase)
+        rawCharset += CHAR_SETS.uppercase;
+    if (lowercase)
+        rawCharset += CHAR_SETS.lowercase;
+    if (ascii)
+        rawCharset += CHAR_SETS.ascii;
+    if (space)
+        rawCharset += CHAR_SETS.space;
+    if (customcheck && customchar) {
+        rawCharset += customchar.replace(/ /g, "\u00A0");
+    }
+
+    // Removes duplicate entries
     let orgCharset = "";
-    for (const ch of customchar) {
-        if (!orgCharset.includes(ch)){
-            orgCharset+=ch;
+    for (const ch of rawCharset) {
+        const cc = ch.codePointAt(0);
+        if (cc >= 0xD800 ? 0xE000 > cc : false) {
+            throw new RangeError("Invalid UTF-16 string");
+        }
+        if (!orgCharset.includes(ch)) {
+            orgCharset += ch;
         }
     }
+    console.log(orgCharset);
     return orgCharset;
 }
 
 function initCrypto() {
-    if ("crypto" in window){
+    if ("crypto" in window) {
         cryptoObject = crypto;
-    }else if ("msCrypto" in window){
+    } else if ("msCrypto" in window) {
         cryptoObject = msCrypto;
-    }else{
+    } else {
         return;
     }
-    
-    if (!("getRandomValues" in cryptoObject) || !("Uint32Array" in window) || typeof Uint32Array != "function"){
+
+    if (!("getRandomValues" in cryptoObject) || !("Uint32Array" in window) || typeof Uint32Array != "function") {
         cryptoObject = null;
     }
 }
 
 //  Calculate length 
-function calcLength(type, len, entropy, charset){
+function calcLength(type, len, entropy, charset) {
     let wholelen;
-    if (type==='length'){
-        wholelen= parseInt(len);        
-    }else if(type==='entropy'){
-        if (charset.length<2){
-            return 0;
-        }
-        wholelen= Math.ceil(parseFloat(entropy) * Math.log(2) / Math.log(charset.length));
-    }else{
+    if (type === 'length') {
+        wholelen = parseInt(len);
+    } else if (type === 'entropy') {
+        wholelen = Math.ceil(parseFloat(entropy) * Math.log(2) / Math.log(charset.length));
+    } else {
         throw new Error("Assertion error");
     }
+    console.log(wholelen);
     return wholelen;
 }
 
 // Calculate entropy for display 
-function calcentropy(charset, wholelen){
+function calcentropy(charset, wholelen) {
+    if (charset.length === 0 || wholelen <= 0)
+        return "0";
+
     const entropy = Math.log(charset.length) * wholelen / Math.log(2);
     let entropystr;
-    if (70 > entropy){
+    if (70 > entropy) {
         entropystr = entropy.toFixed(2);
-    }else if (200 > entropy){
+    } else if (200 > entropy) {
         entropystr = entropy.toFixed(1);
-    }else{
+    } else {
         entropystr = entropy.toFixed(0);
     }
     return entropystr;
 }
 
-function generatePassword(charset, wholelen) {
-    if (wholelen<0 || wholelen>10000){
+function generatePassword(charset, wholelen, _refresh) {
+    if (wholelen < 0 || wholelen > 10000) {
         return "";
     }
     let result = "";
@@ -81,7 +98,7 @@ function generatePassword(charset, wholelen) {
 }
 
 function copy() {
-    const text= document.getElementById("password").textContent;
+    const text = document.getElementById("password").textContent;
     return navigator.clipboard.writeText(text);
 }
 
