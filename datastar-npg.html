@@ -17,14 +17,13 @@
 			space: false, 
 			customcheck: false, 
 			customchar: '', 
-			charset: '', 
 			type: 'length',
 			len: 10,
 			entropy: 124,
 			refresh: 0
 			}" data-computed:charset="initCharSet($numbers, $uppercase, $lowercase, $ascii, $space, $customcheck, $customchar)"
 		data-computed:wholelen="calcLength($type, $len, $entropy, $charset)"
-		data-computed:entropystr="calcentropy($charset, $wholelen)"
+		data-computed:entropystr="calcEntropy($charset, $wholelen)"
 		data-effect="$password = ($charset && $wholelen > 0 && $wholelen <= 10000) ? generatePassword($charset, $wholelen, $refresh) : ''">
 		<h1>Random password generator (Datastar + JS)</h1>
 		<fieldset data-attr:disabled="$customcheck">
