@@ -42,6 +42,7 @@ for (const ch of rawCharset) {
 }
 
 return charset;
+}
 
 function initCrypto() {
     if ("crypto" in window) {
